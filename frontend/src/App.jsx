@@ -1,7 +1,12 @@
 import "./App.css";
+import JobPage from "./pages/JobPage";
 
 function App() {
-  return <div>Job Tracker Application</div>;
+  return (
+    <>
+      <JobPage />
+    </>
+  );
 }
 
 export default App;
