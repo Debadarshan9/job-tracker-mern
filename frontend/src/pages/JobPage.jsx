@@ -130,7 +130,7 @@ const JobPage = () => {
       <div className={styles.heading}>
         <span>Jobs List</span>
         <Button variant="contained" onClick={handleOpen}>
-          Add Jobs
+          Add Job
         </Button>
       </div>
       <Menu
