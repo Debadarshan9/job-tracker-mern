@@ -12,11 +12,13 @@ export const fetchJobTableData = createAsyncThunk(
   },
 );
 
-export const fetchJobById = createAsyncThunk(
-  "fetchJobById",
-  async (id, { rejectWithValue }) => {
+export const fetchJobByJobRefNum = createAsyncThunk(
+  "fetchJobByJobRefNum",
+  async (jobRefNum, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/job/${id}`);
+      const response = await axios.get(
+        `http://localhost:5000/api/job/${jobRefNum}`,
+      );
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data.message);
@@ -39,14 +41,12 @@ export const createJob = createAsyncThunk(
   },
 );
 
-export const updateJobById = createAsyncThunk(
-  "updateJobById",
-  async ({ id, payload }, { rejectWithValue }) => {
+export const updateJobByJobRefNum = createAsyncThunk(
+  "updateJobByJobRefNum",
+  async ({ jobRefNum, payload }, { rejectWithValue }) => {
     try {
-      console.log({ id });
-      console.log({ payload });
       const response = await axios.put(
-        `http://localhost:5000/api/job/${id}`,
+        `http://localhost:5000/api/job/${jobRefNum}`,
         payload,
       );
       return response.data;
@@ -56,12 +56,12 @@ export const updateJobById = createAsyncThunk(
   },
 );
 
-export const deleteJobById = createAsyncThunk(
-  "deleteJobById",
-  async (id, { rejectWithValue }) => {
+export const deleteJobByJobRefNum = createAsyncThunk(
+  "deleteJobByJobRefNum",
+  async (jobRefNum, { rejectWithValue }) => {
     try {
       const response = await axios.delete(
-        `http://localhost:5000/api/job/${id}`,
+        `http://localhost:5000/api/job/${jobRefNum}`,
       );
       return response.data;
     } catch (error) {

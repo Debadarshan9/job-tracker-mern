@@ -4,7 +4,37 @@
 .heading {
   display: flex;
   justify-content: space-between;
+  span {
+    font-size: 2rem;
+    font-weight: bold;
+  }
 }
 .tableContainier {
+  margin-block: 1rem;
   max-height: calc(100svh - 10rem);
+  border: 0.01rem solid lightgray;
+  border-radius: 0.3rem;
+}
+
+.tableHeader .MuiTableCell-root {
+  font-weight: 700;
+}
+.verticalIcon {
+  cursor: pointer;
+  font-size: 1.2rem;
+}
+
+.statusCell {
+  border-radius: 0.2rem;
+  width: fit-content;
+  padding: 0.2rem 0.5rem;
+  &.applied {
+    background-color: lightskyblue;
+  }
+  &.interview {
+    background-color: lightgreen;
+  }
+  &.rejected {
+    background-color: lightcoral;
+  }
 }

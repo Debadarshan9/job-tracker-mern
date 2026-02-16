@@ -1,9 +1,13 @@
 import Job from "../models/job.js";
-import { StatusEnum } from "../utils/enum.js";
+import { generateJobRefNum } from "../utils/utils.js";
 
 export const createJob = async (req, res) => {
   try {
-    const job = await Job.create(req.body);
+    const jobData = {
+      ...req.body,
+      jobRefNum: generateJobRefNum(),
+    };
+    const job = await Job.create(jobData);
     return res.status(201).json(job);
   } catch (error) {
     console.error(error);
@@ -11,7 +15,7 @@ export const createJob = async (req, res) => {
   }
 };
 
-export const getAllJobs = async (req, res) => {
+export const getAllJobs = async (_, res) => {
   try {
     const allJobs = await Job.find().sort({ createdAt: -1 });
     return res.status(200).json(allJobs);
@@ -21,9 +25,10 @@ export const getAllJobs = async (req, res) => {
   }
 };
 
-export const getJobById = async (req, res) => {
+export const getJobByJobRefNum = async (req, res) => {
   try {
-    const job = await Job.findById(req.params.id);
+    const { jobRefNum } = req.params;
+    const job = await Job.findOne({ jobRefNum });
 
     if (!job) {
       return res.status(404).json({ message: "Job not found" });
@@ -35,9 +40,10 @@ export const getJobById = async (req, res) => {
   }
 };
 
-export const updateJob = async (req, res) => {
+export const updateJobByJobRefNum = async (req, res) => {
   try {
-    const job = await Job.findByIdAndUpdate(req.params.id, req.body, {
+    const { jobRefNum } = req.params;
+    const job = await Job.findOneAndUpdate({ jobRefNum }, req.body, {
       new: true,
       runValidators: true,
     });
@@ -55,9 +61,10 @@ export const updateJob = async (req, res) => {
   }
 };
 
-export const deleteJob = async (req, res) => {
+export const deleteJobByJobRefNum = async (req, res) => {
   try {
-    const job = await Job.findByIdAndDelete(req.params.id);
+    const { jobRefNum } = req.params;
+    const job = await Job.findOneAndDelete({ jobRefNum });
     if (!job) {
       return res.status(404).json({ message: "Job not found" });
     }

@@ -1,4 +1,5 @@
 export const TableColumns = [
+  { id: "#", name: "Sl No." },
   { id: "title", name: "Job Title" },
   { id: "companyName", name: "Company Name" },
   { id: "logo", name: "Company Logo" },
