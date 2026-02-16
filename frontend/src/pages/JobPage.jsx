@@ -13,16 +13,20 @@ import {
   TableRow,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { deleteJobById, fetchJobTableData } from "../redux/job/thunk.js";
+import { deleteJobByJobRefNum, fetchJobTableData } from "../redux/job/thunk.js";
 import { selectJobTableData } from "../redux/job/selector.js";
 import JobModal from "../components/job/JobModal.jsx";
-import { OptionsList } from "../utils/utils.js";
+import { classes, OptionsList } from "../utils/utils.js";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { StatusEnum } from "../utils/enum.js";
+import DeleteModal from "../components/deleteModal/DeleteModal.jsx";
 const JobPage = () => {
   const { response } = useSelector(selectJobTableData);
   const [openModal, setOpenModal] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [editMode, setEditMode] = useState(false);
   const [selectedJob, setSelectedJob] = useState(null);
+  const [openDelete, setOpenDelete] = useState(false);
 
   const dispatch = useDispatch();
   useEffect(() => {
@@ -33,9 +37,22 @@ const JobPage = () => {
     return OptionsList.find((option) => option.value === status).viewValue;
   };
 
+  const renderStatusStyle = (status) => {
+    switch (status) {
+      case StatusEnum.APPLIED:
+        return styles.applied;
+      case StatusEnum.INTERVIEW:
+        return styles.interview;
+      case StatusEnum.REJECTED:
+        return styles.rejected;
+      default:
+        return "";
+    }
+  };
+
   const handleActionClick = (e, row) => {
     setAnchorEl(e.currentTarget);
-    setSelectedJob(row._id);
+    setSelectedJob(row);
   };
 
   const handleMenuClose = (e) => {
@@ -48,19 +65,26 @@ const JobPage = () => {
     handleMenuClose();
   };
 
-  const handleDeleteClick = async () => {
+  const handleConfirmation = async () => {
     try {
-      await dispatch(deleteJobById(selectedJob)).unwrap();
+      await dispatch(deleteJobByJobRefNum(selectedJob.jobRefNum)).unwrap();
       dispatch(fetchJobTableData());
     } catch (error) {
       console.error("Delete is failed", error);
     } finally {
-      setAnchorEl(null);
+      setOpenDelete(false);
     }
   };
 
-  const renderTableCell = (column, rowData) => {
+  const handleDeleteClick = () => {
+    setOpenDelete(true);
+    setAnchorEl(null);
+  };
+
+  const renderTableCell = (index, column, rowData) => {
     switch (column.id) {
+      case "#":
+        return <TableCell sx={{ width: "4.5rem" }}>{index + 1}</TableCell>;
       case "title":
         return <TableCell>{rowData.title}</TableCell>;
       case "companyName":
@@ -76,7 +100,18 @@ const JobPage = () => {
           </TableCell>
         );
       case "status":
-        return <TableCell>{renderStatusText(rowData.status)}</TableCell>;
+        return (
+          <TableCell>
+            <div
+              className={classes(
+                styles.statusCell,
+                renderStatusStyle(rowData.status),
+              )}
+            >
+              {renderStatusText(rowData.status)}
+            </div>
+          </TableCell>
+        );
       case "createdAt":
         return (
           <TableCell>
@@ -93,15 +128,16 @@ const JobPage = () => {
   return (
     <div className={styles.container}>
       <div className={styles.heading}>
-        <span>Jobs</span>
+        <span>Jobs List</span>
         <Button variant="contained" onClick={handleOpen}>
-          Add
+          Add Jobs
         </Button>
       </div>
       <Menu
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
         onClose={handleMenuClose}
+        autoFocus={false}
       >
         <MenuItem onClick={handleEditClick}>Edit</MenuItem>
         <MenuItem onClick={handleDeleteClick}>Delete</MenuItem>
@@ -111,17 +147,21 @@ const JobPage = () => {
           <TableHead>
             <TableRow>
               {TableColumns.map((item) => (
-                <TableCell key={item.id}>{item.name}</TableCell>
+                <TableCell className={styles.tableHeader} key={item.id}>
+                  {item.name}
+                </TableCell>
               ))}
               <TableCell>Action</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {response?.map((item) => (
+            {response?.map((item, index) => (
               <TableRow>
-                {TableColumns.map((column) => renderTableCell(column, item))}
+                {TableColumns.map((column) =>
+                  renderTableCell(index, column, item),
+                )}
                 <TableCell onClick={(event) => handleActionClick(event, item)}>
-                  .
+                  <MoreVertIcon className={styles.verticalIcon} />
                 </TableCell>
               </TableRow>
             ))}
@@ -131,8 +171,14 @@ const JobPage = () => {
       <JobModal
         open={openModal}
         editMode={editMode}
+        setEditMode={setEditMode}
         setOpen={setOpenModal}
-        jobRefNum={selectedJob}
+        jobRefNum={selectedJob?.jobRefNum}
+      />
+      <DeleteModal
+        open={openDelete}
+        handleClose={() => setOpenDelete(false)}
+        handleConfirm={handleConfirmation}
       />
     </div>
   );

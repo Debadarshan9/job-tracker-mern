@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { LoadingStatusEnum } from "../../utils/enum.js";
-import { fetchJobById, fetchJobTableData } from "./thunk.js";
+import { fetchJobByJobRefNum, fetchJobTableData } from "./thunk.js";
 
 const initialState = {
   jobTableData: {
@@ -41,15 +41,15 @@ const jobSlice = createSlice({
     });
 
     // To get data by id
-    builder.addCase(fetchJobById.pending, (state) => {
+    builder.addCase(fetchJobByJobRefNum.pending, (state) => {
       state.jobById.isLoading = LoadingStatusEnum.LOADING;
     });
-    builder.addCase(fetchJobById.rejected, (state, action) => {
+    builder.addCase(fetchJobByJobRefNum.rejected, (state, action) => {
       state.jobById.isLoading = LoadingStatusEnum.LOADED;
       state.jobById.error = action.payload;
       state.jobById.response = null;
     });
-    builder.addCase(fetchJobById.fulfilled, (state, action) => {
+    builder.addCase(fetchJobByJobRefNum.fulfilled, (state, action) => {
       state.jobById.isLoading = LoadingStatusEnum.LOADED;
       state.jobById.response = action.payload;
       state.jobById.error = "";

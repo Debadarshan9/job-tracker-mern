@@ -6,16 +6,17 @@ import { StatusEnum } from "../../utils/enum.js";
 import { useDispatch, useSelector } from "react-redux";
 import {
   createJob,
-  fetchJobById,
+  fetchJobByJobRefNum,
   fetchJobTableData,
-  updateJobById,
+  updateJobByJobRefNum,
 } from "../../redux/job/thunk.js";
 import { selectJobById } from "../../redux/job/selector.js";
 import TextFieldComponent from "../common/TextFieldComponent.jsx";
 import { useForm } from "react-hook-form";
 import SelectFieldComponent from "../common/SelectFieldComponent.jsx";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
-const JobModal = ({ open, setOpen, editMode, jobRefNum }) => {
+
+const JobModal = ({ open, setOpen, editMode, setEditMode, jobRefNum }) => {
   const { control, handleSubmit, reset } = useForm({
     defaultValues: {
       title: "",
@@ -26,12 +27,10 @@ const JobModal = ({ open, setOpen, editMode, jobRefNum }) => {
 
   const dispatch = useDispatch();
   const { response } = useSelector(selectJobById);
-  console.log({ response });
 
   useEffect(() => {
     if (editMode && jobRefNum) {
-      console.log({ jobRefNum });
-      dispatch(fetchJobById(jobRefNum));
+      dispatch(fetchJobByJobRefNum(jobRefNum));
     }
   }, [editMode, jobRefNum]);
 
@@ -46,6 +45,12 @@ const JobModal = ({ open, setOpen, editMode, jobRefNum }) => {
   }, [editMode, response]);
   const handleClose = () => {
     setOpen(false);
+    reset({
+      title: "",
+      companyName: "",
+      status: StatusEnum.APPLIED,
+    });
+    setEditMode(false);
   };
 
   const onSubmit = async (formData) => {
@@ -58,16 +63,14 @@ const JobModal = ({ open, setOpen, editMode, jobRefNum }) => {
         status: Number(formData.status),
       };
       if (editMode) {
-        console.log();
         await dispatch(
-          updateJobById({ id: jobRefNum, payload: payload }),
+          updateJobByJobRefNum({ jobRefNum: jobRefNum, payload: payload }),
         ).unwrap();
       } else {
         await dispatch(createJob(payload)).unwrap();
       }
-      dispatch(fetchJobTableData());
       handleClose();
-      reset();
+      dispatch(fetchJobTableData());
     } catch (error) {
       console.error("Submission is failed", error);
     }
