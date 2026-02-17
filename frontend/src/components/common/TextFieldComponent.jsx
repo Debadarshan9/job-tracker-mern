@@ -8,6 +8,7 @@ const TextFieldComponent = ({
   placeholder,
   fullWidth = true,
   required,
+  ...inputProps
 }) => {
   return (
     <Controller
@@ -17,7 +18,9 @@ const TextFieldComponent = ({
       render={({ field, fieldState }) => (
         <TextField
           {...field}
+          {...inputProps}
           label={label}
+          error={!!fieldState.error}
           placeholder={placeholder}
           fullWidth={fullWidth}
           required={!!fieldState.error}

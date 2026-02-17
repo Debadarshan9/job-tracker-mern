@@ -3,8 +3,17 @@ import { generateJobRefNum } from "../utils/utils.js";
 
 export const createJob = async (req, res) => {
   try {
+    const logoUrl = req.file
+      ? `http://localhost:5000/uploads/${req.file.filename}`
+      : null;
+
     const jobData = {
-      ...req.body,
+      title: req.body.title,
+      company: {
+        name: req.body.companyName,
+        logoUrl,
+      },
+      status: req.body?.status,
       jobRefNum: generateJobRefNum(),
     };
     const job = await Job.create(jobData);
@@ -43,10 +52,23 @@ export const getJobByJobRefNum = async (req, res) => {
 export const updateJobByJobRefNum = async (req, res) => {
   try {
     const { jobRefNum } = req.params;
-    const job = await Job.findOneAndUpdate({ jobRefNum }, req.body, {
-      new: true,
-      runValidators: true,
-    });
+    const logoUrl = req.file
+      ? `http://localhost:5000/uploads/${req.file.filename}`
+      : null;
+
+    const updatedData = {
+      title: req.body.title,
+      company: { name: req.body.companyName, logoUrl },
+      status: req.body.status,
+    };
+    const job = await Job.findOneAndUpdate(
+      { jobRefNum },
+      { $set: updatedData },
+      {
+        new: true,
+        runValidators: true,
+      },
+    );
     if (!job) {
       return res.status(404).json({ message: "Job not found" });
     }
