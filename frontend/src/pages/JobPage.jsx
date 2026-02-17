@@ -156,7 +156,7 @@ const JobPage = () => {
           </TableHead>
           <TableBody>
             {response?.map((item, index) => (
-              <TableRow>
+              <TableRow key={item.jobRefNum}>
                 {TableColumns.map((column) =>
                   renderTableCell(index, column, item),
                 )}

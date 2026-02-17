@@ -18,7 +18,7 @@ const jobSlice = createSlice({
   name: "Jobs",
   initialState,
   reducers: {
-    resetJobSlice: (state) => state.initialState,
+    resetJobSlice: () => initialState,
 
     clearJobTableData: (state) =>
       (state.jobTableData = initialState.jobTableData),

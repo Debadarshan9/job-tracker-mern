@@ -1,0 +1,23 @@
+.dragDrop {
+  height: fit-content;
+  width: fit-content;
+  border: 0.05rem dashed blue;
+  cursor: pointer;
+  padding: 0.2rem;
+  background-color: rgba(211, 211, 211, 0.404);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.afterDrop {
+  padding: 3rem;
+  max-height: 5rem;
+  max-width: 5rem;
+}
+
+.preview {
+  width: 5rem;
+  height: 5rem;
+  object-fit: contain;
+}

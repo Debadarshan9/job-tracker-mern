@@ -1,7 +1,7 @@
 import { StatusEnum, ValidateEnum } from "../utils/enum.js";
 
 export const validateJob = (mode) => (req, res, next) => {
-  const { title, company, status } = req.body;
+  const { title, companyName, status } = req.body;
 
   // Title Validation
   if (mode === ValidateEnum.CREATE && !title) {
@@ -12,10 +12,10 @@ export const validateJob = (mode) => (req, res, next) => {
   }
 
   //  Company name
-  if (mode === ValidateEnum.CREATE && !company?.name) {
+  if (mode === ValidateEnum.CREATE && !companyName) {
     return res.status(400).json({ message: "Company name is required" });
   }
-  if (company?.name !== undefined && typeof company?.name !== "string") {
+  if (companyName !== undefined && typeof companyName !== "string") {
     return res
       .status(400)
       .json({ message: "Company name should be a valid string" });
